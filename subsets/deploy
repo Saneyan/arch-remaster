@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# Deploy the environment.
+#
+# @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
+# @license  MIT License
 
 [ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
 

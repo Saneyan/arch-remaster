@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# Build remastered Arch ISO.
+#
+# @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
+# @license  MIT License
 
 [ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
 
@@ -19,15 +24,15 @@ declare -r _dirname=$(cd $(dirname $0)/../ && pwd)
 
 source $_dirname/subsets/remaster-utils
 
-while getopts i:o:c:s:ufa: opt; do
+while getopts i:o:c:s:ufgqa: opt; do
   case $opt in
     # The contents directory.
     i) _in=$OPTARG ;;
-    # Arch remasterd ISO path.
+    # Remastered Arch ISO path.
     o) _out=$OPTARG ;;
     # Chef cookbooks' path.
     c) _cookbook=$OPTARG ;;
-    # The shell binary path on chroot.
+    # Shell in a chroot.
     s) _shell=$OPTARG ;;
     u) _update=true ;;
     f) _auto=true ;;
