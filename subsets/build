@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env zsh
 #
 # Build remastered Arch ISO.
 #
@@ -64,10 +64,20 @@ mount --verbose --rbind $_dirname $_rootfs/remaster
 __ ":: Bundling cookbooks..."
 
 if [[ -n $_cookbook ]]; then
-  if [[ $_cookbook =~ "^git://|^https?://" ]]; then
-    git clone $_cookbook $_rootfs/cookbooks
-  elif [ -e $_cookbook ]; then
-    cp --archive --verbose $_cookbook $_rootfs/cookbooks
+  _params=($(echo $_cookbook | tr -s ':' ' '))
+  if [ ${#_params[@]} = 2 ]; then
+    export COOKBOOK=$_params[2]
+
+    if [[ $_params[1] =~ "^git://|^https?://" ]]; then
+      git clone $_params[1] $_rootfs/cookbooks
+    elif [ -e $_params[1] ]; then
+      cp --archive --verbose $_params[1] $_rootfs/cookbooks
+    else
+      unset COOKBOOK
+      echo "No cookbooks found."
+    fi
+  else
+    echo "You must specify cookbook as <cookbook_dir>:<cookbook_name>."
   fi
 else
   echo "No cookbooks specified."
@@ -79,7 +89,7 @@ if [ $_auto = true ]; then
   cp --verbose $_dirname/chroot/bootstrap.zsh $_rootfs$_defaultz
   export DEFAULTZ=$_defaultz AFTERZ=$_afterz UPDATE=$_update
   arch-chroot $_rootfs /bin/zsh
-  unset DEFAULTZ AFTERZ
+  unset DEFAULTZ AFTERZ COOKBOOK
 else
   echo "Let's customize your Arch Linux. Enjoy!"
   arch-chroot $_rootfs $_shell

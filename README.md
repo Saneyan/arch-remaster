@@ -45,6 +45,12 @@ The following command option specifies directory contents, remastered ISO path, 
 bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -f -g -q
 ```
 
+If you have your Chef cookbooks, you can deploy with them to use `-c` option.
+
+```
+bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path> -f -g -q
+```
+
 ## License
 
 MIT License.

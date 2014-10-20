@@ -11,9 +11,10 @@ yaourt -S --noconfirm ruby
 mkinitcpio -p linux
 
 if [ -e /cookbooks ]; then
-  gem install chef berkshelf
+  export PATH=$PATH:$(ruby -e "print Gem.user_dir")/bin
+  gem install chef berkshelf --verbose
   if [ $? = 0 ]; then
-    cd cookbooks
-    chef-solo
+    cd cookbooks/$COOKBOOK
+    berks install
   fi
 fi

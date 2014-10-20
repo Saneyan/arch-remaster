@@ -5,7 +5,7 @@
 # @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
 # @license  MIT License
 
-declare -l -r _args=${@:2:($# - 1)}
+declare -r _args=${@:2:($# - 1)}
 
 case $1 in
   "build") subsets/build $_args;;
