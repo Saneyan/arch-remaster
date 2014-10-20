@@ -56,4 +56,4 @@ __ "The contents are existed in '$_dir/mnt'"
 
 touch $_dirname/.deploy.lock
 
-exit 1
+[ $? = 0 ] && echo "Done!"

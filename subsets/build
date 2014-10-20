@@ -3,6 +3,8 @@
 [ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
 
 declare _in= _out= _cookbook=
+declare _generate=false
+declare _squash=false
 declare _update=false           # Update remastered ISO contents or not.
 declare _auto=false             # Build remastered ISO by using Chef cookbooks automatically or not.
 declare _arch=$(uname -m)       # The target architecture
@@ -29,6 +31,8 @@ while getopts i:o:c:s:ufa: opt; do
     s) _shell=$OPTARG ;;
     u) _update=true ;;
     f) _auto=true ;;
+    g) _generate=true ;;
+    q) _squash=true ;;
     # The target architecture. It must be x86_64 or i686 architecture.
     a)
       if [[ "$OPTARG" =~ "^(x86_64|i686)$" ]]; then
@@ -42,10 +46,9 @@ while getopts i:o:c:s:ufa: opt; do
 done
 
 [[ -z $_in ]] && echo "The contents directory is required." && exit 1
-[[ -z $_out ]] && echo "Remastered ISO path is required." && exit 1
+[ -g = true ] && [[ -z $_out ]] && echo "Remastered ISO path is required." && exit 1
 
 declare -r _rootfs=$_in/mnt
-readonly _in _out _cookbook _arch _shell _auto
 
 echo "Start building remastered Arch Linux..."
 cd $_in/arch/$_arch
@@ -66,34 +69,40 @@ else
 fi
 
 __ ":: Entering chroot..."
-if [ $_auto = false ]; then
-  echo "Let's customize your Arch Linux. Enjoy!"
-  arch-chroot $_rootfs $_shell
-else
+if [ $_auto = true ]; then
   [ -e $_rootfs$_defaultz ] && mv --verbose $_rootfs$_defaultz $_rootfs$_afterz
   cp --verbose $_dirname/chroot/bootstrap.zsh $_rootfs$_defaultz
   export DEFAULTZ=$_defaultz AFTERZ=$_afterz UPDATE=$_update
   arch-chroot $_rootfs /bin/zsh
   unset DEFAULTZ AFTERZ
+else
+  echo "Let's customize your Arch Linux. Enjoy!"
+  arch-chroot $_rootfs $_shell
 fi
 
-__ ":: Making squashfs..."
-cp --verbose $_rootfs/boot/vmlinuz-linux $_in/arch/boot/$_arch/vmlinuz
-cp --verbose $_rootfs/boot/initramfs-linux.img $_in/arch/boot/$_arch/archiso.img
-mv --verbose $_rootfs/pkglist.txt $_in/arch/pkglist.$_arch.txt
-
 umount $_rootfs/remaster
-rm --verbose airootfs.sfs
-mksquashfs $_in/squashfs-root airootfs.sfs
+rm --recursive --verbose $_rootfs/remaster
 
-__ ":: Updating files..."
-md5sum airootfs.sfs > airootfs.md5
+if [ $_squash = true ]; then
+  __ ":: Making squashfs..."
+  cp --verbose $_rootfs/boot/vmlinuz-linux $_in/arch/boot/$_arch/vmlinuz
+  cp --verbose $_rootfs/boot/initramfs-linux.img $_in/arch/boot/$_arch/archiso.img
+  mv --verbose $_rootfs/pkglist.txt $_in/arch/pkglist.$_arch.txt
 
-__ ":: Generating remastered Arch ISO..."
-genisoimage -r -l -J -V "ARCH_gfunction_$(date +"%Y%m%d")"\
-  -b isolinux/isolinux.bin\
-  -c isolinux/boot.cat\
-  -o $_out \
-  -no-emul-boot -boot-load-size 4 -boot-info-table -allow-limited-size $_in
+  rm --verbose airootfs.sfs
+  mksquashfs $_in/squashfs-root airootfs.sfs
+
+  __ ":: Updating files..."
+  md5sum airootfs.sfs > airootfs.md5
+fi
+
+if [ $_generate = true ]; then
+  __ ":: Generating remastered Arch ISO..."
+  genisoimage -r -l -J -V "ARCH_gfunction_$(date +"%Y%m%d")"\
+    -b isolinux/isolinux.bin\
+    -c isolinux/boot.cat\
+    -o $_out \
+    -no-emul-boot -boot-load-size 4 -boot-info-table -allow-limited-size $_in
+fi
 
 [ $? = 0 ] && echo "Done!"

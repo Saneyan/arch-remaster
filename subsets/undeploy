@@ -45,3 +45,5 @@ if [ $_rall = true ]; then
 fi
 
 rm $_dirname/.deploy.lock
+
+[ $? = 0 ] && echo "Done!"
