@@ -1,0 +1,99 @@
+#!/bin/sh
+
+[ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
+
+declare _in= _out= _cookbook=
+declare _update=false           # Update remastered ISO contents or not.
+declare _auto=false             # Build remastered ISO by using Chef cookbooks automatically or not.
+declare _arch=$(uname -m)       # The target architecture
+declare _shell=/bin/zsh         # The default shell on chroot
+declare -r _pool=/tmp/customiso # The pool path of custom ISO (Read-only)
+declare -r _mntp=/mnt/archiso   # The mount point of Arch ISO (Read-only)
+declare -r _afterz=/etc/zsh/after.zshrc
+declare -r _defaultz=/etc/zsh/zshrc
+declare -r _dirname=$(cd $(dirname $0)/../ && pwd)
+
+[ ! -e $_dirname/.deploy.lock ] && echo "You must deploy the environment." && exit 1
+
+source $_dirname/subsets/remaster-utils
+
+while getopts i:o:c:s:ufa: opt; do
+  case $opt in
+    # The contents directory.
+    i) _in=$OPTARG ;;
+    # Arch remasterd ISO path.
+    o) _out=$OPTARG ;;
+    # Chef cookbooks' path.
+    c) _cookbook=$OPTARG ;;
+    # The shell binary path on chroot.
+    s) _shell=$OPTARG ;;
+    u) _update=true ;;
+    f) _auto=true ;;
+    # The target architecture. It must be x86_64 or i686 architecture.
+    a)
+      if [[ "$OPTARG" =~ "^(x86_64|i686)$" ]]; then
+        _arch=$OPTARG
+      else
+        echo "Specify an architecture, 'x86_64' or 'i686'"
+        return 1
+      fi
+      ;;
+  esac
+done
+
+[[ -z $_in ]] && echo "The contents directory is required." && exit 1
+[[ -z $_out ]] && echo "Remastered ISO path is required." && exit 1
+
+declare -r _rootfs=$_in/mnt
+readonly _in _out _cookbook _arch _shell _auto
+
+echo "Start building remastered Arch Linux..."
+cd $_in/arch/$_arch
+mkdir --verbose $_rootfs/remaster
+mount --verbose --rbind $_dirname $_rootfs/remaster
+
+# These cookbooks must be included in ISO.
+__ ":: Bundling cookbooks..."
+
+if [[ -n $_cookbook ]]; then
+  if [[ $_cookbook =~ "^git://|^https?://" ]]; then
+    git clone $_cookbook $_rootfs/cookbooks
+  elif [ -e $_cookbook ]; then
+    cp --archive --verbose $_cookbook $_rootfs/cookbooks
+  fi
+else
+  echo "No cookbooks specified."
+fi
+
+__ ":: Entering chroot..."
+if [ $_auto = false ]; then
+  echo "Let's customize your Arch Linux. Enjoy!"
+  arch-chroot $_rootfs $_shell
+else
+  [ -e $_rootfs$_defaultz ] && mv --verbose $_rootfs$_defaultz $_rootfs$_afterz
+  cp --verbose $_dirname/chroot/bootstrap.zsh $_rootfs$_defaultz
+  export DEFAULTZ=$_defaultz AFTERZ=$_afterz UPDATE=$_update
+  arch-chroot $_rootfs /bin/zsh
+  unset DEFAULTZ AFTERZ
+fi
+
+__ ":: Making squashfs..."
+cp --verbose $_rootfs/boot/vmlinuz-linux $_in/arch/boot/$_arch/vmlinuz
+cp --verbose $_rootfs/boot/initramfs-linux.img $_in/arch/boot/$_arch/archiso.img
+mv --verbose $_rootfs/pkglist.txt $_in/arch/pkglist.$_arch.txt
+
+umount $_rootfs/remaster
+rm --verbose airootfs.sfs
+mksquashfs $_in/squashfs-root airootfs.sfs
+
+__ ":: Updating files..."
+md5sum airootfs.sfs > airootfs.md5
+
+__ ":: Generating remastered Arch ISO..."
+genisoimage -r -l -J -V "ARCH_gfunction_$(date +"%Y%m%d")"\
+  -b isolinux/isolinux.bin\
+  -c isolinux/boot.cat\
+  -o $_out \
+  -no-emul-boot -boot-load-size 4 -boot-info-table -allow-limited-size $_in
+
+[ $? = 0 ] && echo "Done!"
