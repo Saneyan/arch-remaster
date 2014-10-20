@@ -113,7 +113,7 @@ fi
 
 if [ $_generate = true ]; then
   __ ":: Generating remastered Arch ISO..."
-  genisoimage -r -l -J -V "ARCH_gfunction_$(date +"%Y%m%d")"\
+  genisoimage -r -l -J -V "ARCH_$(date +"%Y%m%d")"\
     -b isolinux/isolinux.bin\
     -c isolinux/boot.cat\
     -o $_out \
