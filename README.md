@@ -59,7 +59,7 @@ bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -f -q -g
 If you have your Chef cookbooks, you can deploy with them to use `-c` option.
 
 ```
-bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path> -f -g -q
+bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path>:<cookbook_name> -f -g -q
 ```
 
 ## Update
@@ -67,7 +67,7 @@ bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_pa
 To update remastered Arch Linux ISO, use `-u` option.
 
 ```
-bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path> -f -u
+bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path>:<cookbook_name> -f -u
 ```
 
 ## License
