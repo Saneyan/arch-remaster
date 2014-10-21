@@ -37,7 +37,7 @@ bin/remaster.sh undeploy -d <destination_dir>
 
 _Note: You might want to specify system architecture depending upon the situation. If so, you can use `-a` option, but you must specify 'x86\_64' or 'i686'._
 
-This program uses **yaoutrt** to install and update packages. Before using the package management system, add `archlinuxfr` repository to <destination_dir>/mnt/etc/pacman.conf`.
+This program uses **yaourt** to install and update packages. Before using the package management system, add `archlinuxfr` repository to <destination_dir>/mnt/etc/pacman.conf`.
 
 ```
 [archlinuxfr]
