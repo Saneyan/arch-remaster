@@ -1,5 +1,5 @@
 echo "==> Update packages"
-yaourt -Syua --force --noconfirm archiso linux
+pacman -Syu --force --noconfirm archiso linux
 
 if [ -e /cookbooks ]; then
   export PATH=$PATH:$(ruby -e "print Gem.user_dir")/bin

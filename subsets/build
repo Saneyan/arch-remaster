@@ -64,23 +64,8 @@ mount --verbose --rbind $_dirname $_rootfs/remaster
 __ ":: Bundling cookbooks..."
 
 if [[ -n $_cookbook ]]; then
-
-  if [ -e $_rootfs/cookbooks ]; then
-    if [[ $_cookbook =~ "^git://|^https?://" ]]; then
-      $(cd $rootfs/cookbooks && git pull origin master)
-    elif [ -e $_cookbook ]; then
-      rm --verbose --recursive $_rootfs/cookbooks
-      cp --verbose --archive $_cookbook $_rootfs/cookbooks
-    fi
-  else
-    if [[ $_cookbook =~ "^git://|^https?://" ]]; then
-      git clone $_cookbook $_rootfs/cookbooks
-    elif [ -e $_cookbook ]; then
-      cp --verbose --archive $_cookbook $_rootfs/cookbooks
-    else
-      echo "No cookbooks found."
-    fi
-  fi
+  mkdir --verbose $_rootfs/cookbooks
+  mount --verbose --rbind $_cookbook $_rootfs/cookbooks
 else
   echo "No cookbooks specified."
 fi
@@ -96,6 +81,11 @@ if [ $_auto = true ]; then
 else
   echo "Let's customize your Arch Linux. Enjoy!"
   arch-chroot $_rootfs $_shell
+fi
+
+if [[ -n $_cookbook ]]; then
+  umount $_rootfs/cookbooks
+  rm --recursive --verbose $_rootfs/cookbooks
 fi
 
 umount $_rootfs/remaster
