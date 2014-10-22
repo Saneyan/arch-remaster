@@ -4,9 +4,8 @@ pacman-key --populate archlinux
 
 echo "==> Install and update packages"
 pacman -Syy
-pacman -S --noconfirm yaourt
-yaourt -Syua --force --noconfirm archiso linux
-yaourt -S --noconfirm ruby
+pacman -Syu --force --noconfirm archiso linux
+pacman -S --noconfirm gcc make ruby
 
 mkinitcpio -p linux
 
@@ -20,3 +19,5 @@ if [ -e /cookbooks ]; then
     chef-solo -c ./solo.rb -j ./solo.json install
   fi
 fi
+
+pacman -S --noconfirm yaourt
