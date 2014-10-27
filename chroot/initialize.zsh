@@ -19,5 +19,3 @@ if [ -e /cookbooks ]; then
     chef-solo -c ./solo.rb -j ./solo.json install
   fi
 fi
-
-pacman -S --noconfirm yaourt
