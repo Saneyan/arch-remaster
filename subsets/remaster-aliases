@@ -1,0 +1,8 @@
+alias -g ar-mv='mv --verbose'
+alias -g ar-cp='cp --verbose'
+alias -g ar-cpr='ar-cp --recursive'
+alias -g ar-rm='rm --verbose'
+alias -g ar-rmr='ar-rm --recursive'
+alias -g ar-mkdir='mkdir --verbose --parents'
+alias -g ar-mount='sudo mount --verbose'
+alias -g ar-umount='sudo umount --verbose'

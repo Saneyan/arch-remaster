@@ -2,38 +2,6 @@ function __() {
   echo -e "\033[0;1m${1}\033[0;0m"
 }
 
-function ar-mv() {
-  mv --verbose ${@:2:($# - 1)}
-}
-
-function ar-cp() {
-  cp --verbose ${@:2:($# - 1)}
-}
-
-functino ar-cpr() {
-  ar-cp --recursive ${@:2:($# - 1)}
-}
-
-function ar-rm() {
-  rm --verbose ${@:2:($# - 1)}
-}
-
-function ar-rmr() {
-  ar-rm --recursive ${@:2:($# - 1)}
-}
-
-function ar-mkdir() {
-  mkdir --verbose --parents ${@:2:($# - 1)}
-}
-
-function ar-mount() {
-  sudo mount --verbose ${@:2:($# - 1)}
-}
-
-function ar-umount() {
-  sudo umount --verbose ${@:2:($# - 1)}
-}
-
 function enforce-survey() {
   local _msg= _not=false
 
@@ -44,9 +12,9 @@ function enforce-survey() {
     _msg=$1
   fi
 
-  if [ $_not = false ] && [ ! -e $_lockfile ] ||\
-    [ $_not = true ] && [ -e $_lockfile ]; then
-    echo $1
+  if ([ $_not = false ] && [ ! -e $_lockfile ]) ||\
+    ([ $_not = true ] && [ -e $_lockfile ]); then
+    echo $_msg
     exit 1
   fi
 }

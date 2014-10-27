@@ -6,8 +6,6 @@
 # @license  MIT License
 
 declare -r _args=${@:2:($# - 1)}
-declare -rg _dirname=$(cd $(dirname $0)/../ && pwd)
-source $_dirname/subsets/remaster-{env,utils}
 
 case $1 in
   "build") subcmds/build $_args;;

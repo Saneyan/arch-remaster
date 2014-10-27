@@ -8,6 +8,11 @@
 #
 #---------------------------------------------------------
 
+declare -r _dirname=$(cd $(dirname $0)/../ && pwd)
+
+source $_dirname/subsets/remaster-env
+source $_dirname/subsets/remaster-utils
+source $_dirname/subsets/remaster-aliases
 source $_dirname/subsets/bind-undeploy
 
 enforce-survey "You have not deployed the environment."

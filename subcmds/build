@@ -8,6 +8,11 @@
 #
 #---------------------------------------------------------
 
+declare -r _dirname=$(cd $(dirname $0)/../ && pwd)
+
+source $_dirname/subsets/remaster-env
+source $_dirname/subsets/remaster-utils
+source $_dirname/subsets/remaster-aliases
 source $_dirname/subsets/bind-build
 
 enforce-survey "You must deploy the environment."
@@ -19,7 +24,7 @@ cd $_in/archive/arch/$_arch
 if [ $_aufs = true ]; then
   mount-aufs $_aufs_r_work $_dirname $_in/mnt/remaster
 else
-  ar-cpr $_dirname $_in/mnt/remaster
+  sudo ar-cpr $_dirname $_in/mnt/remaster
 fi
 
 #----------------------------
@@ -29,7 +34,7 @@ if [[ -n $_cookbook ]]; then
   if [ $_aufs = true ]; then
     mount-aufs $_aufs_c_work $_cookbook $_in/mnt/cookbooks
   else
-    ar-cpr $_cookbook $_in/mnt/cookbooks
+    sudo ar-cpr $_cookbook $_in/mnt/cookbooks
   fi
 else
   echo "No cookbooks specified."
@@ -53,14 +58,14 @@ if [[ -n $_cookbook ]]; then
   if [ $_aufs = true ]; then
     umount-aufs $_aufs_c_work $_in/mnt/cookbooks
   else
-    ar-rmr $_in/mnt/cookbooks
+    sudo ar-rmr $_in/mnt/cookbooks
   fi 
 fi
 
 if [ $_aufs = true ]; then
   umount-aufs $_aufs_r_work $_in/mnt/remaster
 else
-  ar-rmr $_in/mnt/remaster
+  sudo ar-rmr $_in/mnt/remaster
 fi
 
 if [ $_squash = true ]; then
