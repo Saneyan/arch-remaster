@@ -29,7 +29,7 @@ if [[ -z $_in ]]; then
   exit 1
 fi
 
-if [ $_g = true ] && [[ -z $_out ]]; then
+if [ $_generate = true ] && [[ -z $_out ]]; then
   echo "Remastered ISO path is required."
   exit 1
 fi
