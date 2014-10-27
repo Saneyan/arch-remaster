@@ -25,11 +25,11 @@ while getopts i:o:c:s:nufgqa: opt; do
 done
 
 if [[ -z $_in ]]; then
-  "The contents directory is required."
+  echo "The contents directory is required."
   exit 1
 fi
 
 if [ $_g = true ] && [[ -z $_out ]]; then
-  "Remastered ISO path is required."
+  echo "Remastered ISO path is required."
   exit 1
 fi

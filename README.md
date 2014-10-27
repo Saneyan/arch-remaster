@@ -5,12 +5,11 @@ Arch Remaster
 
 ## Installation
 
-Clone source codes from GitHub repository and download Arch Linux ISO from official website.
+Install arch-remaster package from AUR and download Arch Linux ISO from official website.
 In advance, make Chef cookbooks to deploy your remastered Arch Linux ISO and system environment.
 
 ```
-git clone https://github.com/Saneyan/arch-remaster.git arch-remaster
-cd arch-remaster
+yaourt -S arch-remaster
 ```
 
 ## Usage
