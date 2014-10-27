@@ -15,7 +15,7 @@ case $1 in
     cat <<_EOT_
 Arch Remaster - Remastering Arch Linux ISO.
 
-./remaster.sh <command> <options>
+arch-remaster <command> <options>
 
 Commands:
   build    : Build remastered Arch Linux ISO. 

@@ -88,11 +88,16 @@ if [ $_generate = true ]; then
   #----------------------------------------
   __ ":: Generating remastered Arch ISO..."
   #----------------------------------------
-  genisoimage -r -l -J -V "ARCH_$(date +"%Y%m%d")"\
-    -b isolinux/isolinux.bin\
-    -c isolinux/boot.cat\
-    -o $_out \
-    -no-emul-boot -boot-load-size 4 -boot-info-table $_in/archive
+  xorriso -as mkisofs \
+    -iso-level 3 \
+    -full-iso9660-filenames \
+    -volid 'ARCH_201410' \
+    -eltorito-boot isolinux/isolinux.bin \
+    -eltorito-catalog isolinux/boot.cat \
+    -no-emul-boot -boot-load-size 4 -boot-info-table \
+    -isohybrid-mbr $_in/archive/isolinux/isohdpfx.bin \
+    -output $_out \
+    $_in/archive
 fi
 
 [ $? = 0 ] && echo "Done!"

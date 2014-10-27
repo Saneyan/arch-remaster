@@ -15,10 +15,10 @@ cd arch-remaster
 
 ## Usage
 
-`remaster.sh` in bin directory is a entry of Arch Remaster. `help` command prints its usage.
+`arch-remaster` in bin directory is a entry of Arch Remaster. `help` command prints its usage.
 
 ```
-bin/remaster.sh <command> <options>
+arch-remaster <command> <options>
 ```
 
 ### Deployment and Undepolyment
@@ -26,24 +26,16 @@ bin/remaster.sh <command> <options>
 `deploy` command deploys arch-remaster environment to customize your Arch Linux ISO.
 
 ```
-bin/remaster.sh deploy -i <arch_iso_path> -d <destination_dir>
+arch-remaster deploy -i <arch_iso_path> -d <destination_dir>
 ```
 
 To undeploy arch-remaster environment, use `undeploy` command.
 
 ```
-bin/remaster.sh undeploy -d <destination_dir>
+arch-remaster undeploy -d <destination_dir>
 ```
 
 _Note: You might want to specify system architecture depending upon the situation. If so, you can use `-a` option, but you must specify 'x86\_64' or 'i686'._
-
-This program uses **yaourt** to install and update packages. Before using the package management system, add `archlinuxfr` repository to `<destination_dir>/mnt/etc/pacman.conf`.
-
-```
-[archlinuxfr]
-SigLevel = Never
-Server = http://repo.archlinux.fr/$arch
-```
 
 Edit `<destination_dir>/mnt/etc/pacman.d/mirrorlist` to select the best mirror server.
 
@@ -53,13 +45,13 @@ The following command option specifies directory contents, remastered ISO path, 
 You can enter interactive shell without using `-f` option.
 
 ```
-bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -f -q -g
+arch-remaster build -i <dir_contents> -o <remastered_iso_path> -f -q -g
 ```
 
 If you have your Chef cookbooks, you can deploy with them to use `-c` option.
 
 ```
-bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path>:<cookbook_name> -f -g -q
+arch-remaster build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path> -f -g -q
 ```
 
 ## Update
@@ -67,7 +59,7 @@ bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_pa
 To update remastered Arch Linux ISO, use `-u` option.
 
 ```
-bin/remaster.sh build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path>:<cookbook_name> -f -u
+arch-remaster build -i <dir_contents> -o <remastered_iso_path> -f -u
 ```
 
 ## License
