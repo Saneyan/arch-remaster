@@ -16,5 +16,4 @@ fi
 LANG=C pacman -Sl | awk '/\[installed\]$/ {print $1 "/" $2 "-" $3}' > /pkglist.txt
 pacman -Scc --noconfirm
 
-__ "Exit chroot"
 exit 0

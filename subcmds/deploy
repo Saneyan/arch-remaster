@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+#---------------------------------------------------------
+#
+# Deploy the environment
+#
+# @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
+# @license  MIT License
+#
+#---------------------------------------------------------
+
+source $_dirname/subsets/bind-deploy
+
+enforce-survey ! "It has already been deployed."
+
+#--------------------------------------------
+__ ":: Extract and unsquashing filesystem..."
+#--------------------------------------------
+[ ! -e $_mntp ] && sudo ar-mkdir $_mntp
+ar-mount --types iso9660 --options loop $_in $_mntp
+
+if [ -e $_dir ]; then
+  echo "$_dir is already existed."
+else
+  mkdir $_dir
+  ar-cp --archive $_mntp $_dir/archive
+fi
+
+cd $_dir/archive/arch/$_arch
+unsquashfs -dest $_dir/squashfs-root airootfs.sfs
+
+ar-mkdir $_dir/mnt
+ar-mount --options loop $_dir/squashfs-root/airootfs.img $_dir/mnt
+
+__ "The contents are existed in '$_dir/mnt'"
+
+touch $_dirname/.deploy.lock
+
+[ $? = 0 ] && echo "Done!"

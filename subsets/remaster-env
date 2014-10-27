@@ -1,0 +1,6 @@
+declare -rg _mntp=/mnt/archiso    # The mount point of Arch ISO (Read-only)
+declare -rg _afterz=/etc/zsh/after.zshrc
+declare -rg _defaultz=/etc/zsh/zshrc
+declare -rg _aufs_r_work=/tmp/arch-remaster-r-work
+declare -rg _aufs_c_work=/tmp/arch-remaster-c-work
+declare -rg _lockfile=$_dirname/.deploy.lock

@@ -1,0 +1,33 @@
+declare\
+  _in= _out= _cookbook=
+  _generate=false
+  _squash=false
+  _update=false     # Update remastered ISO contents or not.
+  _auto=false       # Build remastered ISO by using Chef cookbooks automatically or not.
+  _arch=$(uname -m) # The target architecture
+  _shell=/bin/zsh   # The default shell on chroot
+
+while getopts i:o:c:s:ufgqa: opt; do
+  case $opt in
+    i) _in=$OPTARG ;;
+    o) _out=$OPTARG ;;
+    c) _cookbook=$OPTARG ;;
+    s) _shell=$OPTARG ;;
+    u) _update=true ;;
+    f) _auto=true ;;
+    g) _generate=true ;;
+    q) _squash=true ;;
+    a) enforce-arch "Specify an architecture, 'x86_64' or 'i686'"
+       _arch=$OPTARG ;;
+  esac
+done
+
+if [[ -z $_in ]]; then
+  "The contents directory is required."
+  exit 1
+fi
+
+if [ $_g = true ] && [[ -z $_out ]]; then
+  "Remastered ISO path is required."
+  exit 1
+fi

@@ -6,11 +6,13 @@
 # @license  MIT License
 
 declare -r _args=${@:2:($# - 1)}
+declare -rg _dirname=$(cd $(dirname $0)/../ && pwd)
+source $_dirname/subsets/remaster-{env,utils}
 
 case $1 in
-  "build") subsets/build $_args;;
-  "deploy") subsets/deploy $_args;;
-  "undeploy") subsets/undeploy $_args;;
+  "build") subcmds/build $_args;;
+  "deploy") subcmds/deploy $_args;;
+  "undeploy") subcmds/undeploy $_args;;
   *)
     cat <<_EOT_
 Arch Remaster - Remastering Arch Linux ISO.

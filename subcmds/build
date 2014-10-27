@@ -1,0 +1,73 @@
+#!/usr/bin/env zsh
+#---------------------------------------------------------
+#
+# Build remastered Arch ISO
+#
+# @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
+# @license  MIT License
+#
+#---------------------------------------------------------
+
+source $_dirname/subsets/bind-build
+
+enforce-survey "You must deploy the environment."
+
+__ "Start building remastered Arch Linux..."
+
+cd $_in/archive/arch/$_arch
+mount-aufs $_aufs_r_work $_dirname $_in/mnt/remaster
+
+#----------------------------
+__ ":: Mounting cookbooks..."
+#----------------------------
+if [[ -n $_cookbook ]]; then
+  mount-aufs $_aufs_c_work $_cookbook $_in/mnt/cookbooks
+else
+  echo "No cookbooks specified."
+fi
+
+#-------------------------
+__ ":: Entering chroot..."
+#-------------------------
+if [ $_auto = true ]; then
+  [ -e $_in/mnt$_defaultz ] && sudo ar-mv $_in/mnt$_defaultz $_in/mnt$_afterz
+  sudo ar-cp $_dirname/chroot/bootstrap.zsh $_in/mnt$_defaultz
+  sudo DEFAULTZ=$_defaultz AFTERZ=$_afterz UPDATE=$_update ARCH=$_arch arch-chroot $_in/mnt /bin/zsh
+else
+  echo "Let's customize your Arch Linux. Enjoy!"
+  sudo arch-chroot $_in/mnt $_shell
+fi
+
+__ "Exit chroot"
+
+[[ -n $_cookbook ]] && umount-aufs $_aufs_c_work $_in/mnt/cookbooks
+umount-aufs $_aufs_r_work $_in/mnt/remaster
+
+if [ $_squash = true ]; then
+  #-------------------------
+  __ ":: Making squashfs..."
+  #-------------------------
+  ar-cp $_in/mnt/boot/vmlinuz-linux $_in/archive/arch/boot/$_arch/vmlinuz
+  ar-cp $_in/mnt/boot/initramfs-linux.img $_in/archive/arch/boot/$_arch/archiso.img
+  sudo ar-mv $_in/mnt/pkglist.txt $_in/archive/arch/pkglist.$_arch.txt
+  sudo ar-rm airootfs.sfs
+  sudo mksquashfs $_in/squashfs-root airootfs.sfs
+
+  #------------------------
+  __ ":: Updating files..."
+  #------------------------
+  sudo md5sum airootfs.sfs > airootfs.md5
+fi
+
+if [ $_generate = true ]; then
+  #----------------------------------------
+  __ ":: Generating remastered Arch ISO..."
+  #----------------------------------------
+  genisoimage -r -l -J -V "ARCH_$(date +"%Y%m%d")"\
+    -b isolinux/isolinux.bin\
+    -c isolinux/boot.cat\
+    -o $_out \
+    -no-emul-boot -boot-load-size 4 -boot-info-table $_in/archive
+fi
+
+[ $? = 0 ] && echo "Done!"

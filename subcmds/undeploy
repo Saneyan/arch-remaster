@@ -1,0 +1,27 @@
+#!/usr/bin/env zsh
+#---------------------------------------------------------
+#
+# Undeploy the environment
+#
+# @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
+# @license  MIT License
+#
+#---------------------------------------------------------
+
+source $_dirname/subsets/bind-undeploy
+
+enforce-survey "You have not deployed the environment."
+
+cd $_dir/archive/arch/$_arch
+ar-umount $_dir/mnt
+ar-umount $_mntp
+sudo ar-rmr $_mntp
+
+if [ $_rall = true ]; then
+  sudo ar-rm airootfs.sfs
+  sudo ar-rmr --force $_dir
+fi
+
+rm $_dirname/.deploy.lock
+
+[ $? = 0 ] && echo "Done!"

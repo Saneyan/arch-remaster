@@ -1,3 +1,74 @@
 function __() {
   echo -e "\033[0;1m${1}\033[0;0m"
 }
+
+function ar-mv() {
+  mv --verbose ${@:2:($# - 1)}
+}
+
+function ar-cp() {
+  cp --verbose ${@:2:($# - 1)}
+}
+
+functino ar-cpr() {
+  ar-cp --recursive ${@:2:($# - 1)}
+}
+
+function ar-rm() {
+  rm --verbose ${@:2:($# - 1)}
+}
+
+function ar-rmr() {
+  ar-rm --recursive ${@:2:($# - 1)}
+}
+
+function ar-mkdir() {
+  mkdir --verbose --parents ${@:2:($# - 1)}
+}
+
+function ar-mount() {
+  sudo mount --verbose ${@:2:($# - 1)}
+}
+
+function ar-umount() {
+  sudo umount --verbose ${@:2:($# - 1)}
+}
+
+function enforce-survey() {
+  local _msg= _not=false
+
+  if [[ $1 = '!' ]]; then
+    _not=true
+    _msg=$2
+  else
+    _msg=$1
+  fi
+
+  if [ $_not = false ] && [ ! -e $_lockfile ] ||\
+    [ $_not = true ] && [ -e $_lockfile ]; then
+    echo $1
+    exit 1
+  fi
+}
+
+function enforce-arch() {
+  if ! [[ "$OPTARG" =~ "^(x86_64|i686)$" ]]; then
+    echo $1
+    exit 1
+  fi
+}
+
+function mount-aufs() {
+  sudo ar-mkdir $1
+  sudo ar-mkdir 3
+  ar-mount --type aufs\
+    --option context=unconfined_u:object_r:tmp_t:s0\
+    --option br=$1:$2=ro\
+    aufs $3
+}
+
+function umount-aufs() {
+  ar-umount $2
+  sudo ar-rmr $1
+  sudo ar-rmr $2
+}

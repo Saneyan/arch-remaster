@@ -1,0 +1,25 @@
+declare _in= _dir=
+declare _arch=$(uname -m)
+
+while getopts i:d:a: opt; do
+  case $opt in
+    # Arch ISO path.
+    i) _in=$OPTARG ;;
+    # Destination directory.
+    d) _dir=$OPTARG ;;
+    # The target architecture. It must be x86_64 or i686 architecture.
+    a)
+      if [[ "$OPTARG" =~ "^(x86_64|i686)$" ]]; then
+        _arch=$OPTARG
+      else
+        echo "Specify an architecture, 'x86_64' or 'i686'"
+        return 1
+      fi
+      ;;
+  esac
+done
+
+[[ -z $_in ]] && echo "Arch ISO path is required." && exit 1
+[[ -z $_dir ]] && echo "The destination directory is required." && exit 1
+
+readonly _in _dir _arch
