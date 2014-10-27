@@ -29,6 +29,7 @@ Build options:
   -o : Remastered Arch ISO path.
   -c : The Cookbook path.
   -s : Shell in a chroot.
+  -u : Use AUFS.
   -u : Update packages and the system.
   -f : Enable full automatic building.
   -g : Generate a new ISO file.

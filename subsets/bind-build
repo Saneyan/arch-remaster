@@ -1,5 +1,6 @@
 declare\
   _in= _out= _cookbook=
+  _aufs=false
   _generate=false
   _squash=false
   _update=false     # Update remastered ISO contents or not.
@@ -7,12 +8,13 @@ declare\
   _arch=$(uname -m) # The target architecture
   _shell=/bin/zsh   # The default shell on chroot
 
-while getopts i:o:c:s:ufgqa: opt; do
+while getopts i:o:c:s:nufgqa: opt; do
   case $opt in
     i) _in=$OPTARG ;;
     o) _out=$OPTARG ;;
     c) _cookbook=$OPTARG ;;
     s) _shell=$OPTARG ;;
+    n) _aufs=true ;;
     u) _update=true ;;
     f) _auto=true ;;
     g) _generate=true ;;

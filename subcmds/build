@@ -15,13 +15,22 @@ enforce-survey "You must deploy the environment."
 __ "Start building remastered Arch Linux..."
 
 cd $_in/archive/arch/$_arch
-mount-aufs $_aufs_r_work $_dirname $_in/mnt/remaster
+
+if [ $_aufs = true ]; then
+  mount-aufs $_aufs_r_work $_dirname $_in/mnt/remaster
+else
+  ar-cpr $_dirname $_in/mnt/remaster
+fi
 
 #----------------------------
 __ ":: Mounting cookbooks..."
 #----------------------------
 if [[ -n $_cookbook ]]; then
-  mount-aufs $_aufs_c_work $_cookbook $_in/mnt/cookbooks
+  if [ $_aufs = true ]; then
+    mount-aufs $_aufs_c_work $_cookbook $_in/mnt/cookbooks
+  else
+    ar-cpr $_cookbook $_in/mnt/cookbooks
+  fi
 else
   echo "No cookbooks specified."
 fi
@@ -40,8 +49,19 @@ fi
 
 __ "Exit chroot"
 
-[[ -n $_cookbook ]] && umount-aufs $_aufs_c_work $_in/mnt/cookbooks
-umount-aufs $_aufs_r_work $_in/mnt/remaster
+if [[ -n $_cookbook ]]; then
+  if [ $_aufs = true ]; then
+    umount-aufs $_aufs_c_work $_in/mnt/cookbooks
+  else
+    ar-rmr $_in/mnt/cookbooks
+  fi 
+fi
+
+if [ $_aufs = true ]; then
+  umount-aufs $_aufs_r_work $_in/mnt/remaster
+else
+  ar-rmr $_in/mnt/remaster
+fi
 
 if [ $_squash = true ]; then
   #-------------------------
