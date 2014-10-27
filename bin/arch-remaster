@@ -6,11 +6,12 @@
 # @license  MIT License
 
 declare -r _args=${@:2:($# - 1)}
+declare -r _pkg=/opt/arch-remaster
 
 case $1 in
-  "build") subcmds/build $_args;;
-  "deploy") subcmds/deploy $_args;;
-  "undeploy") subcmds/undeploy $_args;;
+  "build") $_pkg/subcmds/build $_args;;
+  "deploy") $_pkg/subcmds/deploy $_args;;
+  "undeploy") $_pkg/subcmds/undeploy $_args;;
   *)
     cat <<_EOT_
 Arch Remaster - Remastering Arch Linux ISO.

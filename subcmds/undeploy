@@ -8,7 +8,7 @@
 #
 #---------------------------------------------------------
 
-declare -r _dirname=$(cd $(dirname $0)/../ && pwd)
+declare -r _dirname=/opt/arch-remaster
 
 source $_dirname/subsets/remaster-env
 source $_dirname/subsets/remaster-utils
