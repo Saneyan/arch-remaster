@@ -7,7 +7,7 @@ pacman -Syy
 pacman -Syu --force --noconfirm archiso linux
 pacman -S --noconfirm gcc make autoconf ruby git
 
-mkinitcpio -p linux
+mkinitcpio --preset linux --config /remaster/files/mkinitcpio.conf
 
 if [ -e /cookbooks ]; then
   declare _gembin=$(ruby -e "print Gem.user_dir")/bin

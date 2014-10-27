@@ -1,5 +1,5 @@
 echo "==> Update packages"
-mkinitcpio -p linux
+mkinitcpio --preset linux --config /remaster/files/mkinitcpio.conf
 
 if [ -e /cookbooks ]; then
   declare _gembin=$(ruby -e "print Gem.user_dir")/bin
