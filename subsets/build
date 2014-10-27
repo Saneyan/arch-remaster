@@ -5,7 +5,7 @@
 # @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
 # @license  MIT License
 
-[ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
+#[ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
 
 declare _in= _out= _cookbook=
 declare _generate=false
@@ -51,21 +51,21 @@ while getopts i:o:c:s:ufgqa: opt; do
 done
 
 [[ -z $_in ]] && echo "The contents directory is required." && exit 1
-[ -g = true ] && [[ -z $_out ]] && echo "Remastered ISO path is required." && exit 1
+[ _g = true ] && [[ -z $_out ]] && echo "Remastered ISO path is required." && exit 1
 
 declare -r _rootfs=$_in/mnt
 
 echo "Start building remastered Arch Linux..."
-cd $_in/arch/$_arch
-mkdir --verbose $_rootfs/remaster
-mount --verbose --rbind $_dirname $_rootfs/remaster
+cd $_in/archive/arch/$_arch
+sudo mkdir --verbose $_rootfs/remaster
+sudo mount --verbose --rbind $_dirname $_rootfs/remaster
 
 # These cookbooks must be included in ISO.
 __ ":: Bundling cookbooks..."
 
 if [[ -n $_cookbook ]]; then
-  mkdir --verbose $_rootfs/cookbooks
-  mount --verbose --rbind $_cookbook $_rootfs/cookbooks
+  sudo mkdir --verbose $_rootfs/cookbooks
+  sudo mount --verbose --rbind $_cookbook $_rootfs/cookbooks
 else
   echo "No cookbooks specified."
 fi
@@ -73,35 +73,33 @@ fi
 __ ":: Entering chroot..."
 
 if [ $_auto = true ]; then
-  [ -e $_rootfs$_defaultz ] && mv --verbose $_rootfs$_defaultz $_rootfs$_afterz
-  cp --verbose $_dirname/chroot/bootstrap.zsh $_rootfs$_defaultz
-  export DEFAULTZ=$_defaultz AFTERZ=$_afterz UPDATE=$_update
-  arch-chroot $_rootfs /bin/zsh
-  unset DEFAULTZ AFTERZ COOKBOOK
+  [ -e $_rootfs$_defaultz ] && sudo mv --verbose $_rootfs$_defaultz $_rootfs$_afterz
+  sudo cp --verbose $_dirname/chroot/bootstrap.zsh $_rootfs$_defaultz
+  sudo DEFAULTZ=$_defaultz AFTERZ=$_afterz UPDATE=$_update ARCH=$_arch arch-chroot $_rootfs /bin/zsh
 else
   echo "Let's customize your Arch Linux. Enjoy!"
-  arch-chroot $_rootfs $_shell
+  sudo arch-chroot $_rootfs $_shell
 fi
 
 if [[ -n $_cookbook ]]; then
-  umount $_rootfs/cookbooks
-  rm --recursive --verbose $_rootfs/cookbooks
+  sudo umount $_rootfs/cookbooks
+  sudo rm --recursive --verbose $_rootfs/cookbooks
 fi
 
-umount $_rootfs/remaster
-rm --recursive --verbose $_rootfs/remaster
+sudo umount $_rootfs/remaster
+sudo rm --recursive --verbose $_rootfs/remaster
 
 if [ $_squash = true ]; then
   __ ":: Making squashfs..."
   cp --verbose $_rootfs/boot/vmlinuz-linux $_in/arch/boot/$_arch/vmlinuz
   cp --verbose $_rootfs/boot/initramfs-linux.img $_in/arch/boot/$_arch/archiso.img
-  mv --verbose $_rootfs/pkglist.txt $_in/arch/pkglist.$_arch.txt
+  sudo mv --verbose $_rootfs/pkglist.txt $_in/arch/pkglist.$_arch.txt
 
-  rm --verbose airootfs.sfs
-  mksquashfs $_in/squashfs-root airootfs.sfs
+  sudo rm --verbose airootfs.sfs
+  sudo mksquashfs $_in/squashfs-root airootfs.sfs
 
   __ ":: Updating files..."
-  md5sum airootfs.sfs > airootfs.md5
+  sudo md5sum airootfs.sfs > airootfs.md5
 fi
 
 if [ $_generate = true ]; then
@@ -110,7 +108,7 @@ if [ $_generate = true ]; then
     -b isolinux/isolinux.bin\
     -c isolinux/boot.cat\
     -o $_out \
-    -no-emul-boot -boot-load-size 4 -boot-info-table -allow-limited-size $_in
+    -no-emul-boot -boot-load-size 4 -boot-info-table $_in/archive
 fi
 
 [ $? = 0 ] && echo "Done!"

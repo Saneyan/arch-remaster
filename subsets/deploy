@@ -5,7 +5,7 @@
 # @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
 # @license  MIT License
 
-[ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
+#[ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
 
 declare _in= _dir=
 declare _arch=$(uname -m)
@@ -42,20 +42,21 @@ readonly _in _dir _arch
 echo "Start deploying..."
 
 __ ":: Extract and unsquashing filesystem..."
-[ ! -e $_mntp ] && mkdir --verbose $_mntp
-mount --verbose --types iso9660 --options loop $_in $_mntp
+[ ! -e $_mntp ] && sudo mkdir --verbose $_mntp
+sudo mount --verbose --types iso9660 --options loop $_in $_mntp
 
 if [ -e $_dir ]; then
   echo "$_dir is already existed."
 else
-  cp --archive --verbose $_mntp $_dir
+  mkdir $_dir
+  cp --archive --verbose $_mntp $_dir/archive
 fi
 
-cd $_dir/arch/$_arch
+cd $_dir/archive/arch/$_arch
 unsquashfs -dest $_dir/squashfs-root airootfs.sfs
 
 mkdir --verbose $_dir/mnt
-mount --verbose --options loop $_dir/squashfs-root/airootfs.img $_dir/mnt
+sudo mount --verbose --options loop $_dir/squashfs-root/airootfs.img $_dir/mnt
 
 __ "The contents are existed in '$_dir/mnt'"
 

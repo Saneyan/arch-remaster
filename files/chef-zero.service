@@ -1,0 +1,12 @@
+[Unit]
+Description=chef-zero
+
+[Service]
+Type=simple
+User=daemon
+Environment=PATH=/root/ruby-bin
+ExecStart=/root/ruby-bin/chef-zero -H 127.0.0.1 -p 7863
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

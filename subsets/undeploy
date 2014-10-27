@@ -5,7 +5,7 @@
 # @author   TADOKORO Saneyuki <saneyan@mail.gfunction.com>
 # @license  MIT License
 
-[ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
+#[ "$(whoami)" != "root" ] && echo "Root privilege required." && exit 1
 
 declare _dir=
 declare _rall=false
@@ -39,14 +39,14 @@ done
 
 readonly _dir _arch
 
-cd $_dir/arch/$_arch
-umount --verbose $_dir/mnt
-umount --verbose $_mntp
-rm --recursive --verbose $_mntp
+cd $_dir/archive/arch/$_arch
+sudo umount --verbose $_dir/mnt
+sudo umount --verbose $_mntp
+sudo rm --recursive --verbose $_mntp
 
 if [ $_rall = true ]; then
-  rm --verbose airootfs.sfs
-  rm --recursive --verbose $_dir
+  sudo rm --verbose airootfs.sfs
+  sudo rm --recursive --verbose --force $_dir
 fi
 
 rm $_dirname/.deploy.lock
