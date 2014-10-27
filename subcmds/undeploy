@@ -27,6 +27,6 @@ if [ $_rall = true ]; then
   sudo ar-rmr --force $_dir
 fi
 
-rm $_dirname/.deploy.lock
+sudo rm $_dirname/.deploy.lock
 
 [ $? = 0 ] && echo "Done!"
