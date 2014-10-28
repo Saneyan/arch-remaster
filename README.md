@@ -38,13 +38,13 @@ The following command option specifies directory contents, remastered ISO path, 
 You can enter interactive shell without using `-f` option.
 
 ```
-arch-remaster build -i <dir_contents> -o <remastered_iso_path> -f -q -g
+arch-remaster build -i <dir_contents> -o <remastered_iso_path> -l <device_label> -f -q -g
 ```
 
 If you have your Chef cookbooks, you can deploy with them to use `-c` option.
 
 ```
-arch-remaster build -i <dir_contents> -o <remastered_iso_path> -c <cookbook_path> -f -g -q
+arch-remaster build -i <dir_contents> -o <remastered_iso_path> -l <device_label> -c <cookbook_path> -f -g -q
 ```
 
 ### Update

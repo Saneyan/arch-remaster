@@ -91,7 +91,7 @@ if [ $_generate = true ]; then
   xorriso -as mkisofs \
     -iso-level 3 \
     -full-iso9660-filenames \
-    -volid 'ARCH_201410' \
+    -volid $_label \
     -eltorito-boot isolinux/isolinux.bin \
     -eltorito-catalog isolinux/boot.cat \
     -no-emul-boot -boot-load-size 4 -boot-info-table \

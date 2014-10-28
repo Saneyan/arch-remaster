@@ -43,6 +43,7 @@ Build options:
   -g : Generate a new ISO file.
   -q : Squash a filesystem.
   -a : Specify system architecture.
+  -l : Specify device label.
 
 Deploy options:
   -i : Input Arch Linux ISO.
