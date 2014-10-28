@@ -8,14 +8,12 @@
 #
 #---------------------------------------------------------
 
-declare -r _dirname=/opt/arch-remaster
-
 source $_dirname/subsets/remaster-env
 source $_dirname/subsets/remaster-utils
 source $_dirname/subsets/remaster-aliases
 source $_dirname/subsets/bind-deploy
 
-enforce-survey ! "It has already been deployed."
+enforce-survey ! $_dir "It has already been deployed."
 
 #--------------------------------------------
 __ ":: Extract and unsquashing filesystem..."
@@ -37,7 +35,5 @@ ar-mkdir $_dir/mnt
 ar-mount --options loop $_dir/squashfs-root/airootfs.img $_dir/mnt
 
 __ "The contents are existed in '$_dir/mnt'"
-
-sudo touch $_dirname/.deploy.lock
 
 [ $? = 0 ] && echo "Done!"

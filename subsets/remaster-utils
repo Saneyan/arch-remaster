@@ -2,26 +2,32 @@ function __() {
   echo -e "\033[0;1m${1}\033[0;0m"
 }
 
+function success() {
+  [ $? = 0 ] && echo "Done!"
+}
+
 function enforce-survey() {
-  local _msg= _not=false
+  local _msg= _tar= _not=false
 
   if [[ $1 = '!' ]]; then
     _not=true
-    _msg=$2
+    _tar=$2
+    _msg=$3
   else
-    _msg=$1
+    _tar=$1
+    _msg=$2
   fi
 
-  if ([ $_not = false ] && [ ! -e $_lockfile ]) ||\
-    ([ $_not = true ] && [ -e $_lockfile ]); then
+  if ([ $_not = false ] && [ ! -e $_tar ]) ||\
+    ([ $_not = true ] && [ -e $_tar ]); then
     echo $_msg
     exit 1
   fi
 }
 
 function enforce-arch() {
-  if ! [[ "$OPTARG" =~ "^(x86_64|i686)$" ]]; then
-    echo $1
+  if ! [[ "$1" =~ "^(x86_64|i686)$" ]]; then
+    echo $2
     exit 1
   fi
 }

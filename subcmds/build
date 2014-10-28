@@ -8,14 +8,12 @@
 #
 #---------------------------------------------------------
 
-declare -r _dirname=/opt/arch-remaster
-
 source $_dirname/subsets/remaster-env
 source $_dirname/subsets/remaster-utils
 source $_dirname/subsets/remaster-aliases
 source $_dirname/subsets/bind-build
 
-enforce-survey "You must deploy the environment."
+enforce-survey $_in "You must deploy the environment."
 
 __ "Start building remastered Arch Linux..."
 
@@ -27,32 +25,34 @@ else
   sudo ar-cpr $_dirname $_in/mnt/remaster
 fi
 
-#----------------------------
-__ ":: Mounting cookbooks..."
-#----------------------------
 if [[ -n $_cookbook ]]; then
+  #----------------------------
+  __ ":: Mounting cookbooks..."
+  #----------------------------
   if [ $_aufs = true ]; then
     mount-aufs $_aufs_c_work $_cookbook $_in/mnt/cookbooks
   else
     sudo ar-cpr $_cookbook $_in/mnt/cookbooks
   fi
-else
-  echo "No cookbooks specified."
 fi
 
-#-------------------------
-__ ":: Entering chroot..."
-#-------------------------
-if [ $_auto = true ]; then
-  [ -e $_in/mnt$_defaultz ] && sudo ar-mv $_in/mnt$_defaultz $_in/mnt$_afterz
-  sudo ar-cp $_dirname/chroot/bootstrap.zsh $_in/mnt$_defaultz
-  sudo DEFAULTZ=$_defaultz AFTERZ=$_afterz UPDATE=$_update ARCH=$_arch arch-chroot $_in/mnt /bin/zsh
-else
-  echo "Let's customize your Arch Linux. Enjoy!"
-  sudo arch-chroot $_in/mnt $_shell
-fi
+if ([ $_auto = true ]) || ([ $_interactive = true ]); then
+  #-------------------------
+  __ ":: Entering chroot..."
+  #-------------------------
+  if [ $_auto = true ]; then
+    [ -e $_in/mnt$_defaultz ] && sudo ar-mv $_in/mnt$_defaultz $_in/mnt$_afterz
+    sudo ar-cp $_dirname/chroot/bootstrap.zsh $_in/mnt$_defaultz
+    sudo DEFAULTZ=$_defaultz AFTERZ=$_afterz UPDATE=$_update ARCH=$_arch arch-chroot $_in/mnt /bin/zsh
+  fi
 
-__ "Exit chroot"
+  if [ $_interactive = true ]; then
+    echo "Let's customize your Arch Linux. Enjoy!"
+    sudo arch-chroot $_in/mnt $_shell
+  fi
+
+    __ "Leaving chroot"
+fi
 
 if [[ -n $_cookbook ]]; then
   if [ $_aufs = true ]; then

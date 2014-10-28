@@ -6,12 +6,20 @@
 # @license  MIT License
 
 declare -r _args=${@:2:($# - 1)}
-declare -r _pkg=/opt/arch-remaster
+
+if [[ $0 =~ "debug" ]]; then
+  echo '= DEBUG MODE ='
+  declare -r _dirname=$(cd $(dirname $0)/../ && pwd)
+else
+  declare -r _dirname=/opt/arch-remaster
+fi
+
+export _dirname
 
 case $1 in
-  "build") $_pkg/subcmds/build $_args;;
-  "deploy") $_pkg/subcmds/deploy $_args;;
-  "undeploy") $_pkg/subcmds/undeploy $_args;;
+  "build") $_dirname/subcmds/build $_args;;
+  "deploy") $_dirname/subcmds/deploy $_args;;
+  "undeploy") $_dirname/subcmds/undeploy $_args;;
   *)
     cat <<_EOT_
 Arch Remaster - Remastering Arch Linux ISO.
@@ -28,7 +36,8 @@ Build options:
   -o : Remastered Arch ISO path.
   -c : The Cookbook path.
   -s : Shell in a chroot.
-  -u : Use AUFS.
+  -t : Run on interactive mode.
+  -n : Use AUFS.
   -u : Update packages and the system.
   -f : Enable full automatic building.
   -g : Generate a new ISO file.
@@ -39,11 +48,6 @@ Deploy options:
   -i : Input Arch Linux ISO.
   -d : Destination directory.
   -a : Specify system architecture.
-
-Undeploy options:
-  -d : The directory contents.
-  -a : Specify system architecture.
-  -X : Remove all contents.
 
 _EOT_
     ;;

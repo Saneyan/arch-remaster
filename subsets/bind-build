@@ -1,5 +1,6 @@
 declare\
   _in= _out= _cookbook=
+  _interactive=false
   _aufs=false
   _generate=false
   _squash=false
@@ -8,18 +9,19 @@ declare\
   _arch=$(uname -m) # The target architecture
   _shell=/bin/zsh   # The default shell on chroot
 
-while getopts i:o:c:s:nufgqa: opt; do
+while getopts i:o:c:s:tnufgqa: opt; do
   case $opt in
     i) _in=$OPTARG ;;
     o) _out=$OPTARG ;;
     c) _cookbook=$OPTARG ;;
     s) _shell=$OPTARG ;;
+    t) _interactive=true ;;
     n) _aufs=true ;;
     u) _update=true ;;
     f) _auto=true ;;
     g) _generate=true ;;
     q) _squash=true ;;
-    a) enforce-arch "Specify an architecture, 'x86_64' or 'i686'"
+    a) enforce-arch $OPTARG "Specify an architecture, 'x86_64' or 'i686'"
        _arch=$OPTARG ;;
   esac
 done
